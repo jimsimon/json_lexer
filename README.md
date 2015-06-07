@@ -5,6 +5,7 @@ Features
 ----------
 * Written entirely in Dart
 * Works on both the VM and the browser (via dart2js)
+* Handles escaped JSON strings
 
 Example Usage
 -------------

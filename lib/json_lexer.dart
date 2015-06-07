@@ -1,6 +1,7 @@
 library json_lexer;
 
 import "dart:collection";
+import "dart:convert";
 
 enum ValueType {
   NUMBER,
@@ -172,7 +173,11 @@ class JsonLexer {
     String string = "";
     String character = _json[_index];
     while (character != '"') {
-      string += character;
+      if (character == r"\") {
+        string += _parseEscapedStringFragment();
+      } else {
+        string += character;
+      }
       _index++;
       if (_index == _json.length) {
         throw new LexerException("Invalid json fragment encountered: $string");
@@ -181,6 +186,38 @@ class JsonLexer {
     }
     _index++;
     return string;
+  }
+
+  String _parseEscapedStringFragment() {
+    _index++;
+    String character = _json[_index];
+    switch (character) {
+      case '"':
+      case r'\':
+      case '/':
+        return character;
+      case 'b':
+        return '\b';
+      case 'f':
+        return '\f';
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 't':
+        return '\t';
+      case 'u':
+        int remainingLength = _json.length - _index;
+        if (remainingLength >= 4) {
+          var hexString = _json.substring(_index + 1, _index + 5);
+          _index += 4;
+          var hexInt = int.parse(hexString, radix: 16);
+          return UTF8.decode([hexInt]);
+        }
+        throw new LexerException("Invalid json fragment encountered: $_json");
+      default:
+        throw new LexerException("Syntax Error: Unexpected token $character");
+    }
   }
 
   String _parseBool() {

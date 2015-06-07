@@ -121,4 +121,55 @@ void main() {
     expect(token.valueType, ValueType.END_OBJECT);
     expect(token.value, "}");
   });
+
+  test("can handle escaped quotation marks", () {
+    JsonLexer lexer = new JsonLexer(r'"\""');
+    expect(lexer.tokens.first.value, '"');
+  });
+
+  test("can handle escaped reverse solidus", () {
+    JsonLexer lexer = new JsonLexer(r'"\\"');
+    expect(lexer.tokens.first.value, r'\');
+
+  });
+
+  test("can handle escaped solidus", () {
+    JsonLexer lexer = new JsonLexer(r'"\/"');
+    expect(lexer.tokens.first.value, '/');
+  });
+
+  test("can handle escaped backspace", () {
+    JsonLexer lexer = new JsonLexer(r'"\b"');
+    expect(lexer.tokens.first.value, '\b');
+  });
+
+  test("can handle escaped formfeed", () {
+    JsonLexer lexer = new JsonLexer(r'"\f"');
+    expect(lexer.tokens.first.value, '\f');
+  });
+
+  test("can handle escaped newline", () {
+    JsonLexer lexer = new JsonLexer(r'"\n"');
+    expect(lexer.tokens.first.value, '\n');
+  });
+
+  test("can handle escaped carriage return", () {
+    JsonLexer lexer = new JsonLexer(r'"\r"');
+    expect(lexer.tokens.first.value, '\r');
+  });
+
+  test("can handle escaped horizontal tab", () {
+    JsonLexer lexer = new JsonLexer(r'"\t"');
+    expect(lexer.tokens.first.value, '\t');
+  });
+
+  test("can handle escaped unicode sequences", () {
+    JsonLexer lexer = new JsonLexer(r'"\u0030"]');
+    expect(lexer.tokens.first.value, '0');
+  });
+
+  test("can handle a string with multiple escape characters", () {
+    JsonLexer lexer = new JsonLexer(r'"\"foo\" is not \"bar\". specials: \b\r\n\f\t\\/"');
+    expect(lexer.tokens.first.value, "\"foo\" is not \"bar\". specials: \b\r\n\f\t\\/");
+  });
 }

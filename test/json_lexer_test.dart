@@ -122,35 +122,5 @@ void main() {
       expect(token.valueType, ValueType.END_OBJECT);
       expect(token.value, "}");
     });
-
-//    group("syntax error tests: ", () {
-//      test("throws error for missing closing curly brace", (){
-//        expect(() => new Jsonlexer("{"), throwsArgumentError);
-//      });
-//
-//      test("throws error for missing closing square bracket", (){
-//        expect(() => new Jsonlexer("["), throwsArgumentError);
-//      });
-//
-//      test("throws error for mismatching curly braces", () {
-//        expect(() => new Jsonlexer("}"), throwsArgumentError);
-//      });
-//
-//      test("throws error for mismatching square brackets", () {
-//        expect(() => new Jsonlexer("]"), throwsArgumentError);
-//      });
-//
-//      test("throws error for missing name in name-value pair", () {
-//        expect(() => new Jsonlexer("{:123}"), throwsArgumentError);
-//      });
-//
-//      test("throws error for missing value in name-value pair", () {
-//        expect(() => new Jsonlexer('{"hi":}'), throwsArgumentError);
-//      });
-//
-//      test("throws error for invalid name type in name-value pair", () {
-//        expect(() => new Jsonlexer('{123:"hello"}'), throwsArgumentError);
-//      });
-//    });
   });
 }

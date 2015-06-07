@@ -177,8 +177,8 @@ class JsonLexer {
         string += _parseEscapedStringFragment();
       } else {
         string += character;
+        _index++;
       }
-      _index++;
       if (_index == _json.length) {
         throw new LexerException("Invalid json fragment encountered: $string");
       }
@@ -191,6 +191,7 @@ class JsonLexer {
   String _parseEscapedStringFragment() {
     _index++;
     String character = _json[_index];
+    _index++;
     switch (character) {
       case '"':
       case r'\':
@@ -209,7 +210,7 @@ class JsonLexer {
       case 'u':
         int remainingLength = _json.length - _index;
         if (remainingLength >= 4) {
-          var hexString = _json.substring(_index + 1, _index + 5);
+          var hexString = _json.substring(_index, _index + 4);
           _index += 4;
           var hexInt = int.parse(hexString, radix: 16);
           return UTF8.decode([hexInt]);

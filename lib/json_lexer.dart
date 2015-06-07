@@ -105,14 +105,36 @@ class JsonLexer {
     tokens = _convertJsonStringToTokens();
   }
 
+  String _consumeCharacter() {
+    String character = _json[_index];
+    _index++;
+    return character;
+  }
+
+  String _consumeCharacters(int count) {
+    String fragment = _json.substring(_index, _index + count);
+    _index += count;
+    return fragment;
+  }
+
+  String _peekCharacter() {
+    if (_index == _json.length) {
+      return null;
+    }
+    return _json[_index];
+  }
+
+  void _consumeWhitespace() {
+    while (_WHITESPACE.hasMatch(_peekCharacter())) {
+      _consumeCharacter();
+    }
+  }
+
   Queue<Token> _convertJsonStringToTokens() {
     Queue<Token> tokens = new Queue();
     while(_index != _json.length) {
-      String character = _json[_index];
-      while (_WHITESPACE.hasMatch(character)) {
-        _index++;
-        character = _json[_index];
-      }
+      _consumeWhitespace();
+      String character = _peekCharacter();
 
       String value;
       ValueType valueType = _valueTypeMap[character];
@@ -136,8 +158,7 @@ class JsonLexer {
         case ValueType.END_ARRAY:
         case ValueType.NAME_SEPARATOR:
         case ValueType.VALUE_SEPARATOR:
-          value = character;
-          _index++;
+          value = _consumeCharacter();
           break;
         default:
           throw new LexerException("Syntax Error: Unexpected token $character");
@@ -156,42 +177,35 @@ class JsonLexer {
   String _parseNumber() {
     String number = "";
 
-    String character = _json[_index];
-    while(_numberCharacters.contains(character)) {
-      number += character;
-      _index++;
-      if (_index == _json.length) {
-        break;
-      }
-      character = _json[_index];
+    while(_numberCharacters.contains(_peekCharacter())) {
+      number += _consumeCharacter();
+//      if (_index == _json.length) {
+//        break;
+//      }
     }
     return number;
   }
 
   String _parseString() {
-    _index++;
+    _consumeCharacter(); //We don't care about the starting quotation mark
     String string = "";
-    String character = _json[_index];
+    String character = _consumeCharacter();
     while (character != '"') {
       if (character == r"\") {
         string += _parseEscapedStringFragment();
       } else {
         string += character;
-        _index++;
       }
       if (_index == _json.length) {
         throw new LexerException("Invalid json fragment encountered: $string");
       }
-      character = _json[_index];
+      character = _consumeCharacter();
     }
-    _index++;
     return string;
   }
 
   String _parseEscapedStringFragment() {
-    _index++;
-    String character = _json[_index];
-    _index++;
+    String character = _consumeCharacter();
     switch (character) {
       case '"':
       case r'\':
@@ -210,8 +224,7 @@ class JsonLexer {
       case 'u':
         int remainingLength = _json.length - _index;
         if (remainingLength >= 4) {
-          var hexString = _json.substring(_index, _index + 4);
-          _index += 4;
+          var hexString = _consumeCharacters(4);
           var hexInt = int.parse(hexString, radix: 16);
           return UTF8.decode([hexInt]);
         }
@@ -222,26 +235,20 @@ class JsonLexer {
   }
 
   String _parseBool() {
-    int remainingLength = _json.length - _index;
-    if (remainingLength >= 5 && _json.substring(_index, _index + 5) == "false") {
-      _index += 5;
+    String fragment = _consumeCharacters(4);
+    if (fragment == "true") {
+      return "true";
+    } else if (fragment == "fals" && _consumeCharacter() == "e") {
       return "false";
     }
-
-    if (remainingLength >= 4 && _json.substring(_index, _index + 4) == "true") {
-      _index += 4;
-      return "true";
-    }
-    throw new LexerException("Invalid json fragment encountered: $_json");
+    throw new LexerException("Invalid json fragment encountered: $fragment");
   }
 
   String _parseNull() {
-    String value = "";
-    int remainingLength = _json.length - _index;
-    if (remainingLength >= 4 && _json.substring(_index, _index + 4) == "null") {
-      _index += 4;
+    String fragment = _consumeCharacters(4);
+    if (fragment == "null") {
       return "null";
     }
-    throw new LexerException("Invalid json fragment encountered: $value");
+    throw new LexerException("Invalid json fragment encountered: $fragment");
   }
 }

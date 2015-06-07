@@ -179,9 +179,6 @@ class JsonLexer {
 
     while(_numberCharacters.contains(_peekCharacter())) {
       number += _consumeCharacter();
-//      if (_index == _json.length) {
-//        break;
-//      }
     }
     return number;
   }

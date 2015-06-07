@@ -29,9 +29,9 @@ enum TokenType {
 RegExp _STRING = new RegExp(r'^"$');
 RegExp _WHITESPACE = new RegExp(r"^\s$");
 
-List _numberCharacters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "e", "E", "."];
+const List _numberCharacters = const ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "e", "E", "."];
 
-Map<String, ValueType> _valueTypeMap = {
+const Map<String, ValueType> _valueTypeMap = const {
   "0": ValueType.NUMBER,
   "1": ValueType.NUMBER,
   "2": ValueType.NUMBER,
@@ -55,7 +55,7 @@ Map<String, ValueType> _valueTypeMap = {
   '"': ValueType.STRING
 };
 
-Map<String, TokenType> _tokenTypeMap = {
+const Map<String, TokenType> _tokenTypeMap = const {
   "0": TokenType.VALUE,
   "1": TokenType.VALUE,
   "2": TokenType.VALUE,
@@ -79,6 +79,13 @@ Map<String, TokenType> _tokenTypeMap = {
   '"': TokenType.VALUE
 };
 
+
+class Token {
+  ValueType valueType;
+  String value;
+  TokenType type;
+}
+
 class JsonLexer {
 
   int _index = 0;
@@ -87,14 +94,6 @@ class JsonLexer {
 
   JsonLexer(String this._json) {
     tokens = _tokenize();
-  }
-
-  Token nextToken() {
-    if (tokens.isEmpty) {
-      return null;
-    }
-
-    return tokens.removeFirst();
   }
 
   Queue<Token> _tokenize() {
@@ -111,16 +110,16 @@ class JsonLexer {
       TokenType tokenType = _tokenTypeMap[character];
       switch (valueType) {
         case ValueType.NUMBER:
-          value = parseNumber();
+          value = _parseNumber();
           break;
         case ValueType.BOOL:
-          value = parseBool();
+          value = _parseBool();
           break;
         case ValueType.NULL:
-          value = parseNull();
+          value = _parseNull();
           break;
         case ValueType.STRING:
-          value = parseString();
+          value = _parseString();
           break;
         case ValueType.BEGIN_OBJECT:
         case ValueType.END_OBJECT:
@@ -145,7 +144,7 @@ class JsonLexer {
     return tokens;
   }
 
-  String parseNumber() {
+  String _parseNumber() {
     String number = "";
 
     String character = _json[_index];
@@ -160,7 +159,7 @@ class JsonLexer {
     return number;
   }
 
-  String parseString() {
+  String _parseString() {
     _index++;
     String string = "";
     String character = _json[_index];
@@ -176,7 +175,7 @@ class JsonLexer {
     return string;
   }
 
-  String parseBool() {
+  String _parseBool() {
     int remainingLength = _json.length - _index;
     if (remainingLength >= 5 && _json.substring(_index, _index + 5) == "false") {
       _index += 5;
@@ -190,7 +189,7 @@ class JsonLexer {
     throw new ArgumentError("Invalid json fragment encountered: $_json");
   }
 
-  String parseNull() {
+  String _parseNull() {
     String value = "";
     int remainingLength = _json.length - _index;
     if (remainingLength >= 4 && _json.substring(_index, _index + 4) == "null") {
@@ -199,11 +198,4 @@ class JsonLexer {
     }
     throw new ArgumentError("Invalid json fragment encountered: $value");
   }
-}
-
-
-class Token {
-  ValueType valueType;
-  String value;
-  TokenType type;
 }

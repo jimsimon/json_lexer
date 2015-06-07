@@ -86,6 +86,14 @@ class Token {
   TokenType type;
 }
 
+class LexerException implements Exception {
+  String msg;
+
+  LexerException(String this.msg);
+  
+  String toString() => msg == null ? '' : msg;
+}
+
 class JsonLexer {
 
   int _index = 0;
@@ -131,7 +139,7 @@ class JsonLexer {
           _index++;
           break;
         default:
-          throw new ArgumentError("Syntax Error: Unexpected token $character");
+          throw new LexerException("Syntax Error: Unexpected token $character");
       }
 
       Token token = new Token();
@@ -167,7 +175,7 @@ class JsonLexer {
       string += character;
       _index++;
       if (_index == _json.length) {
-        throw new ArgumentError("Invalid json fragment encountered: $string");
+        throw new LexerException("Invalid json fragment encountered: $string");
       }
       character = _json[_index];
     }
@@ -186,7 +194,7 @@ class JsonLexer {
       _index += 4;
       return "true";
     }
-    throw new ArgumentError("Invalid json fragment encountered: $_json");
+    throw new LexerException("Invalid json fragment encountered: $_json");
   }
 
   String _parseNull() {
@@ -196,6 +204,6 @@ class JsonLexer {
       _index += 4;
       return "null";
     }
-    throw new ArgumentError("Invalid json fragment encountered: $value");
+    throw new LexerException("Invalid json fragment encountered: $value");
   }
 }

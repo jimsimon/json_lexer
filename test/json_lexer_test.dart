@@ -86,7 +86,7 @@ void main() {
     });
 
     test("throws error for bad input", () {
-      expect(() => new JsonLexer('bad'), throwsArgumentError);
+      expect(() => new JsonLexer('bad'), throwsA(new isInstanceOf<LexerException>()));
     });
 
     test("can handle input with multiple tokens", () {

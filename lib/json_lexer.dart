@@ -101,10 +101,10 @@ class JsonLexer {
   Queue<Token> tokens;
 
   JsonLexer(String this._json) {
-    tokens = _tokenize();
+    tokens = _convertJsonStringToTokens();
   }
 
-  Queue<Token> _tokenize() {
+  Queue<Token> _convertJsonStringToTokens() {
     Queue<Token> tokens = new Queue();
     while(_index != _json.length) {
       String character = _json[_index];

@@ -2,7 +2,7 @@ name: json_lexer
 description: A lexer for creating tokens from JSON.
 version: 1.0.0
 author: Jim Simon <jim.j.simon@gmail.com>
-#homepage: https://www.example.com
+homepage: https://github.com/jimsimon/json_lexer
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dev_dependencies:

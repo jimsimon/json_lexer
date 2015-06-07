@@ -4,7 +4,7 @@ A JSON lexer written in Dart.
 Features
 ----------
 * Written entirely in Dart
-* Works on both the VM and dart2js
+* Works on both the VM and the browser (via dart2js)
 
 Example Usage
 -------------

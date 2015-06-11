@@ -27,7 +27,6 @@ enum TokenType {
   EOF
 }
 
-RegExp _STRING = new RegExp(r'^"$');
 RegExp _WHITESPACE = new RegExp(r"^\s$");
 
 const List _numberCharacters = const ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "e", "E", "."];
